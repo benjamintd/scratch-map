@@ -2,26 +2,31 @@ import classnames from "classnames";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { addFeatures } from "../lib/actions";
-import parseToGeoJSON from "../lib/parseToGeoJSON";
 import { useStore } from "../lib/store";
 
 export default function Dropzone({ children }: { children: React.ReactNode }) {
-  const { set, isDragging } = useStore();
+  const { set, dragStatus } = useStore();
   const onDrop = useCallback(async (acceptedFiles: Blob[]) => {
-    const features = await Promise.all(acceptedFiles.map(readFile));
-    set(addFeatures(features.flat()));
+    set((state) => {
+      state.dragStatus = "loading";
+    });
+    const data = await Promise.all(acceptedFiles.map(readFile));
+    console.log(data);
+    set((state) => {
+      state.data = data;
+      state.dragStatus = "idle";
+    });
   }, []);
 
   const onDragEnter = useCallback(() => {
     set((state) => {
-      state.isDragging = true;
+      state.dragStatus = "dragging";
     });
   }, []);
 
   const onDragLeave = useCallback(() => {
     set((state) => {
-      state.isDragging = false;
+      state.dragStatus = "idle";
     });
   }, []);
 
@@ -46,27 +51,43 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
         className={classnames(
           "absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center text-3xl font-bold text-white text-shadow",
           {
-            "bg-gray-900 bg-opacity-75": isDragging,
-            "hidden opacity-0": !isDragging,
+            "bg-gray-900 bg-opacity-75": dragStatus !== "idle",
+            "hidden opacity-0": dragStatus === "idle",
           }
         )}
       >
-        Drag a .gpx file to show it on the map.
+        {dragStatus === "dragging"
+          ? "Drag a file to show it on the map."
+          : "Loading..."}
       </div>
     </div>
   );
 }
 
-function readFile(file): Promise<GeoJSON.Feature<GeoJSON.LineString>[]> {
+function readFile(file): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onabort = () => reject("file reading was aborted");
     reader.onerror = () => reject("file reading has failed");
     reader.onload = () => {
       try {
-        const str = Buffer.from(reader.result as ArrayBuffer).toString("utf-8");
-        const { features } = parseToGeoJSON(str);
-        resolve(features);
+        const str = Buffer.from(reader.result as ArrayBuffer);
+        let marker = 0;
+        let still = true;
+        while (still) {
+          const i = str.indexOf('"latitudeE7" : ', marker, "utf-8");
+          const j = str.indexOf(",\n", i, "utf-8");
+          const k = str.indexOf('"longitudeE7" : ', j, "utf-8");
+          const l = str.indexOf(",\n", k, "utf-8");
+          console.log(str.slice(i, j));
+          if (l > -1) {
+            marker = l + 1;
+          } else {
+            still = false;
+          }
+        }
+        console.log();
+        resolve(str);
       } catch (error) {
         reject(error);
       }

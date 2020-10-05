@@ -5,11 +5,9 @@ import create, { State, StateCreator } from "zustand";
 export type IState = {
   features: GeoJSON.Feature<GeoJSON.LineString>[];
   map: mapboxgl.Map | null;
-  isDragging: boolean;
+  data: any;
+  dragStatus: "idle" | "loading" | "dragging";
   set: (fn: (state: IState) => void) => void;
-  minTimestamp: number;
-  maxTimestamp: number;
-  currentTimestamp: number;
 };
 
 const immer = <T extends State>(
@@ -20,11 +18,9 @@ const immer = <T extends State>(
 export const useStore = create<IState>(
   immer<IState>((set) => ({
     map: null,
+    data: null,
     features: [],
-    isDragging: false,
-    minTimestamp: Infinity,
-    maxTimestamp: 0,
-    currentTimestamp: Infinity,
+    dragStatus: "idle",
     set,
   }))
 );

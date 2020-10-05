@@ -1,16 +1,11 @@
-import { BBox2d } from "@turf/helpers/lib/geojson";
-import { bbox } from "@turf/turf";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect } from "react";
 
-import { mapStateSelector } from "../lib/selectors";
 import { IState, useStore } from "../lib/store";
 
 export default function Map() {
-  const { map, segments, features, set } = useStore((state) =>
-    mapStateSelector(state)
-  );
+  const { map, features, set } = useStore();
 
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -35,22 +30,13 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    if (features.length) {
-      map.fitBounds(bbox({ type: "FeatureCollection", features }) as BBox2d, {
-        padding: 100,
-        duration: 300,
-      });
-    }
-  }, [map, features]);
-
-  useEffect(() => {
     if (map && map.getSource("features")) {
       (map.getSource("features") as GeoJSONSource).setData({
         type: "FeatureCollection",
-        features: segments,
+        features,
       });
     }
-  }, [segments, map]);
+  }, [features, map]);
 
   return (
     <div className="w-full h-full" id="map">
