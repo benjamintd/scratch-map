@@ -1,3 +1,4 @@
+import localforage from "localforage";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 import Head from "next/head";
 import React, { useEffect } from "react";
@@ -20,12 +21,25 @@ export default function Map() {
       preserveDrawingBuffer: true,
     });
 
-    map.on("load", () => {
+    map.on("load", async () => {
       setStyle(map);
 
       set((state: IState) => {
         state.map = map;
       });
+
+      try {
+        const featureCollection = (await localforage.getItem(
+          "featureCollection"
+        )) as GeoJSON.FeatureCollection;
+        if (featureCollection) {
+          set((state) => {
+            state.featureCollection = featureCollection;
+          });
+        }
+      } catch (err) {
+        console.log(err);
+      }
     });
   }, []);
 
@@ -60,6 +74,7 @@ function setStyle(map: mapboxgl.Map) {
       source: "features",
       layout: {},
       paint: {
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 7, 0, 9, 1],
         "fill-color": [
           "match",
           ["get", "kring"],
@@ -72,6 +87,31 @@ function setStyle(map: mapboxgl.Map) {
           "hsla(0, 0%, 100%, 0.66)",
         ],
         "fill-outline-color": "hsla(0, 0%, 0%, 0)",
+      },
+    },
+    "settlement-subdivision-label"
+  );
+
+  map.addLayer(
+    {
+      id: "fc-low-res",
+      type: "fill",
+      source: "features",
+      layout: {},
+      filter: ["==", ["get", "precision"], 3],
+      paint: {
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          0,
+          1,
+          9,
+          1,
+          11,
+          0,
+        ],
+        "fill-color": "hsla(233, 0%, 100%, 0.94)",
       },
     },
     "settlement-subdivision-label"
@@ -100,6 +140,29 @@ function setStyle(map: mapboxgl.Map) {
     "settlement-subdivision-label"
   );
 
+  map.addLayer(
+    {
+      id: "outlines",
+      type: "line",
+      source: "features",
+      filter: ["match", ["get", "kring"], [2], true, false],
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          0,
+          "hsla(25, 65%, 64%, 0.69)",
+          12.7,
+          "hsla(25, 14%, 69%, 0.59)",
+        ],
+        "line-width": 2,
+      },
+    },
+    "settlement-subdivision-label"
+  );
+
   map.addLayer({
     id: "over-labels",
     type: "fill",
@@ -107,6 +170,7 @@ function setStyle(map: mapboxgl.Map) {
     filter: ["match", ["get", "kring"], [2], true, false],
     layout: {},
     paint: {
+      "fill-opacity": ["interpolate", ["linear"], ["zoom"], 6, 0, 8, 1],
       "fill-outline-color": [
         "interpolate",
         ["linear"],
@@ -119,36 +183,6 @@ function setStyle(map: mapboxgl.Map) {
         "hsla(0, 0%, 0%, 0)",
       ],
       "fill-color": "hsla(0, 0%, 100%, 0.44)",
-    },
-  });
-
-  map.addLayer({
-    id: "outlines",
-    type: "line",
-    source: "features",
-    filter: ["match", ["get", "kring"], [2], true, false],
-    layout: { "line-cap": "round", "line-join": "round" },
-    paint: {
-      "line-color": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        0,
-        "hsla(25, 65%, 64%, 0.69)",
-        12.7,
-        "hsla(25, 14%, 69%, 0.59)",
-      ],
-      "line-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        0,
-        3,
-        12.18,
-        1,
-        22,
-        1,
-      ],
     },
   });
 }

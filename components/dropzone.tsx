@@ -1,6 +1,7 @@
 import { bboxPolygon, difference, featureCollection } from "@turf/turf";
 import classnames from "classnames";
-import { geoToH3, h3SetToMultiPolygon, kRing } from "h3-js";
+import { geoToH3, h3SetToMultiPolygon, h3ToParent, kRing } from "h3-js";
+import localforage from "localforage";
 import { flatMap } from "lodash";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
@@ -19,6 +20,8 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
       state.featureCollection = fc;
       state.dragStatus = "idle";
     });
+
+    localforage.setItem("featureCollection", fc);
   }, []);
 
   const onDragEnter = useCallback(() => {
@@ -99,11 +102,11 @@ function readFile(file): Promise<GeoJSON.FeatureCollection> {
 
           incrementTile(tile, tiles);
         }
-        console.log(tiles.size);
         const fc = featureCollection([
           getMaskPolygon(tiles, 0),
           getMaskPolygon(tiles, 1),
           getMaskPolygon(tiles, 2),
+          getMaskPolygon(tiles, 0, 3),
         ]) as GeoJSON.FeatureCollection;
         resolve(fc);
       } catch (error) {
@@ -124,14 +127,18 @@ function incrementTile(tile, tiles) {
 
 function getPolygon(
   tiles: Map<string, number>,
-  kring: number
+  kring: number,
+  precision?: number
 ): GeoJSON.Feature<GeoJSON.MultiPolygon> {
   let tilesArray = Array.from(tiles.keys());
-  if (kring) {
-    tilesArray = Array.from(
-      new Set(flatMap(tilesArray, (t) => kRing(t, kring)))
-    );
-  }
+  tilesArray = Array.from(
+    new Set(
+      flatMap(tilesArray, (t) => {
+        const tile = precision > 0 ? h3ToParent(t, precision) : t;
+        return kring ? kRing(tile, kring) : [tile];
+      })
+    )
+  );
 
   return {
     type: "Feature",
@@ -147,12 +154,14 @@ function getPolygon(
 
 function getMaskPolygon(
   tiles: Map<string, number>,
-  kring: number
+  kring: number,
+  precision?: number
 ): GeoJSON.Feature<GeoJSON.MultiPolygon> {
   const feature = difference(
-    bboxPolygon([-179.9, -89.9, 179.9, 89.9]),
-    getPolygon(tiles, kring)
+    bboxPolygon([-179.99, -89.99, 179.99, 89.99]),
+    getPolygon(tiles, kring, precision)
   ) as GeoJSON.Feature<GeoJSON.MultiPolygon>;
   feature.properties.kring = kring;
+  feature.properties.precision = precision;
   return feature;
 }
