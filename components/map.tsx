@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { IState, useStore } from "../lib/store";
 
 export default function Map() {
-  const { map, features, set } = useStore();
+  const { map, featureCollection, set } = useStore();
 
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -31,12 +31,9 @@ export default function Map() {
 
   useEffect(() => {
     if (map && map.getSource("features")) {
-      (map.getSource("features") as GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features,
-      });
+      (map.getSource("features") as GeoJSONSource).setData(featureCollection);
     }
-  }, [features, map]);
+  }, [featureCollection, map]);
 
   return (
     <div className="w-full h-full" id="map">
@@ -58,31 +55,77 @@ function setStyle(map: mapboxgl.Map) {
 
   map.addLayer(
     {
-      id: "features",
-      type: "line",
+      id: "fc",
+      type: "fill",
       source: "features",
-      layout: {
-        "line-cap": "round",
-      },
+      layout: {},
       paint: {
-        "line-width": 4,
-        "line-color": [
-          "interpolate",
-          ["linear"],
-          ["get", "speed"],
+        "fill-color": [
+          "match",
+          ["get", "kring"],
+          [2],
+          "hsla(233, 0%, 100%, 0.94)",
+          [1],
+          "hsla(0, 0%, 100%, 0.51)",
           0,
-          "#ffffb2",
-          5,
-          "#fecc5c",
-          20,
-          "#fd8d3c",
-          50,
-          "#f03b20",
-          100,
-          "#bd0026",
+          "hsla(0, 0%, 100%, 0.17)",
+          "hsla(0, 0%, 100%, 0.66)",
         ],
+        "fill-outline-color": "hsla(0, 0%, 0%, 0)",
       },
     },
-    "waterway-label"
+    "settlement-subdivision-label"
   );
+
+  map.addLayer({
+    id: "over-labels",
+    type: "fill",
+    source: "features",
+    filter: ["match", ["get", "kring"], [2], true, false],
+    layout: {},
+    paint: {
+      "fill-outline-color": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        "hsla(31, 60%, 65%, 0.88)",
+        7.8,
+        "hsla(0, 0%, 0%, 0)",
+        22,
+        "hsla(0, 0%, 0%, 0)",
+      ],
+      "fill-color": "hsla(0, 0%, 100%, 0.44)",
+    },
+  });
+
+  map.addLayer({
+    id: "outlines",
+    type: "line",
+    source: "features",
+    filter: ["match", ["get", "kring"], [2], true, false],
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: {
+      "line-color": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        "hsla(25, 65%, 64%, 0.69)",
+        12.7,
+        "hsla(25, 14%, 69%, 0.59)",
+      ],
+      "line-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0,
+        3,
+        12.18,
+        1,
+        22,
+        1,
+      ],
+    },
+  });
 }

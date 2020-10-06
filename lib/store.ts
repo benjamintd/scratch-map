@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import create, { State, StateCreator } from "zustand";
 
 export type IState = {
-  features: GeoJSON.Feature<GeoJSON.LineString>[];
+  featureCollection: GeoJSON.FeatureCollection;
   map: mapboxgl.Map | null;
   data: any;
   dragStatus: "idle" | "loading" | "dragging";
@@ -19,7 +19,7 @@ export const useStore = create<IState>(
   immer<IState>((set) => ({
     map: null,
     data: null,
-    features: [],
+    featureCollection: { type: "FeatureCollection", features: [] },
     dragStatus: "idle",
     set,
   }))

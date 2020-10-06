@@ -1,4 +1,7 @@
+import { bboxPolygon, difference, featureCollection } from "@turf/turf";
 import classnames from "classnames";
+import { geoToH3, h3SetToMultiPolygon, kRing } from "h3-js";
+import { flatMap } from "lodash";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -10,10 +13,10 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
     set((state) => {
       state.dragStatus = "loading";
     });
-    const data = await Promise.all(acceptedFiles.map(readFile));
-    console.log(data);
+    const fc = await readFile(acceptedFiles[0]);
+
     set((state) => {
-      state.data = data;
+      state.featureCollection = fc;
       state.dragStatus = "idle";
     });
   }, []);
@@ -34,7 +37,7 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
     onDrop,
     onDragEnter,
     onDragLeave,
-    // accept: "application/gpx+xml",
+    // accept: "application/json",
     noClick: true,
     noKeyboard: true,
   });
@@ -58,13 +61,13 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
       >
         {dragStatus === "dragging"
           ? "Drag a file to show it on the map."
-          : "Loading..."}
+          : "Loading... This might take a while. Staying on this tab makes processing faster."}
       </div>
     </div>
   );
 }
 
-function readFile(file): Promise<Buffer> {
+function readFile(file): Promise<GeoJSON.FeatureCollection> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onabort = () => reject("file reading was aborted");
@@ -73,25 +76,83 @@ function readFile(file): Promise<Buffer> {
       try {
         const str = Buffer.from(reader.result as ArrayBuffer);
         let marker = 0;
-        let still = true;
-        while (still) {
-          const i = str.indexOf('"latitudeE7" : ', marker, "utf-8");
-          const j = str.indexOf(",\n", i, "utf-8");
-          const k = str.indexOf('"longitudeE7" : ', j, "utf-8");
-          const l = str.indexOf(",\n", k, "utf-8");
-          console.log(str.slice(i, j));
+        const precision = 10;
+        const tiles = new Map();
+        let tile, i, j, k, l;
+        while (true) {
+          i = str.indexOf('"latitudeE7" : ', marker, "utf-8");
+          j = str.indexOf(",\n", i, "utf-8");
+          k = str.indexOf('"longitudeE7" : ', j, "utf-8");
+          l = str.indexOf(",\n", k, "utf-8");
+
           if (l > -1) {
             marker = l + 1;
           } else {
-            still = false;
+            break;
           }
+
+          tile = geoToH3(
+            +str.slice(i + 15, j).toString("utf-8") * 1e-7, // latitude
+            +str.slice(k + 16, l).toString("utf-8") * 1e-7, // longitude
+            precision
+          );
+
+          incrementTile(tile, tiles);
         }
-        console.log();
-        resolve(str);
+        console.log(tiles.size);
+        const fc = featureCollection([
+          getMaskPolygon(tiles, 0),
+          getMaskPolygon(tiles, 1),
+          getMaskPolygon(tiles, 2),
+        ]) as GeoJSON.FeatureCollection;
+        resolve(fc);
       } catch (error) {
         reject(error);
       }
     };
     reader.readAsArrayBuffer(file);
   });
+}
+
+function incrementTile(tile, tiles) {
+  if (tiles.has(tile)) {
+    tiles.set(tile, tiles.get(tile) + 1);
+  } else {
+    tiles.set(tile, 1);
+  }
+}
+
+function getPolygon(
+  tiles: Map<string, number>,
+  kring: number
+): GeoJSON.Feature<GeoJSON.MultiPolygon> {
+  let tilesArray = Array.from(tiles.keys());
+  if (kring) {
+    tilesArray = Array.from(
+      new Set(flatMap(tilesArray, (t) => kRing(t, kring)))
+    );
+  }
+
+  return {
+    type: "Feature",
+    properties: {
+      kring,
+    },
+    geometry: {
+      type: "MultiPolygon",
+      coordinates: h3SetToMultiPolygon(tilesArray, true),
+    },
+  };
+}
+
+function getMaskPolygon(
+  tiles: Map<string, number>,
+  kring: number
+): GeoJSON.Feature<GeoJSON.MultiPolygon> {
+  const feature = difference(
+    bboxPolygon([-179.9, -89.9, 179.9, 89.9]),
+    getPolygon(tiles, kring)
+  ) as GeoJSON.Feature<GeoJSON.MultiPolygon>;
+  feature.properties.kring = kring;
+  return feature;
 }
