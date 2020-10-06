@@ -77,6 +77,29 @@ function setStyle(map: mapboxgl.Map) {
     "settlement-subdivision-label"
   );
 
+  map.addLayer(
+    {
+      id: "water-fade",
+      type: "fill",
+      source: "composite",
+      "source-layer": "water",
+      paint: {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          0,
+          "hsl(231, 14%, 84%)",
+          8.81,
+          "hsla(231, 14%, 84%, 0.18)",
+          12,
+          "hsla(231, 14%, 84%, 0)",
+        ],
+      },
+    },
+    "settlement-subdivision-label"
+  );
+
   map.addLayer({
     id: "over-labels",
     type: "fill",
