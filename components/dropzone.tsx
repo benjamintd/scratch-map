@@ -106,7 +106,7 @@ function readFile(file): Promise<GeoJSON.FeatureCollection> {
           getMaskPolygon(tiles, 0),
           getMaskPolygon(tiles, 1),
           getMaskPolygon(tiles, 2),
-          getMaskPolygon(tiles, 0, 3),
+          getMaskPolygon(tiles, 0, 3, 2),
         ]) as GeoJSON.FeatureCollection;
         resolve(fc);
       } catch (error) {
@@ -128,12 +128,16 @@ function incrementTile(tile, tiles) {
 function getPolygon(
   tiles: Map<string, number>,
   kring: number,
-  precision?: number
+  precision?: number,
+  minProbes?: number
 ): GeoJSON.Feature<GeoJSON.MultiPolygon> {
   let tilesArray = Array.from(tiles.keys());
   tilesArray = Array.from(
     new Set(
       flatMap(tilesArray, (t) => {
+        if (minProbes && tiles.get(t) < minProbes) {
+          return [];
+        }
         const tile = precision > 0 ? h3ToParent(t, precision) : t;
         return kring ? kRing(tile, kring) : [tile];
       })
@@ -155,11 +159,12 @@ function getPolygon(
 function getMaskPolygon(
   tiles: Map<string, number>,
   kring: number,
-  precision?: number
+  precision?: number,
+  minProbes?: number
 ): GeoJSON.Feature<GeoJSON.MultiPolygon> {
   const feature = difference(
     bboxPolygon([-179.99, -89.99, 179.99, 89.99]),
-    getPolygon(tiles, kring, precision)
+    getPolygon(tiles, kring, precision, minProbes)
   ) as GeoJSON.Feature<GeoJSON.MultiPolygon>;
   feature.properties.kring = kring;
   feature.properties.precision = precision;
