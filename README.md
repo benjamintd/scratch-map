@@ -1,29 +1,35 @@
-# Tailwind CSS example
+# Fog of war
 
-This is an example of using [Tailwind CSS](https://tailwindcss.com) in a Next.js project.
+How much of the world have you seen ?
 
-## Deploy your own
+Make your own scratch-map style with this tool.
 
-Deploy the example using [Vercel](https://vercel.com):
+<img width="400" alt="Screen Shot 2020-10-05 at 5 13 46 PM" src="https://user-images.githubusercontent.com/11202803/95226437-39a27300-07fd-11eb-97c0-cd91a6c7a4e4.png">
+<img width="400" alt="Screen Shot 2020-10-06 at 4 21 45 PM" src="https://user-images.githubusercontent.com/11202803/95226621-740c1000-07fd-11eb-8ace-f7745aca1785.png">
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss)
 
-## How to use
+## How ?
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+Note: Your data never leaves your device.
 
-```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
-# or
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
-```
+### 1. Download your location history from Google
 
-Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+Head to https://takeout.google.com and request a download of your location history.
 
-## Notes
+<img width="1440" alt="Screen Shot 2020-10-06 at 2 23 02 PM" src="https://user-images.githubusercontent.com/11202803/95226888-bdf4f600-07fd-11eb-8511-3ecbc20c3c76.png">
 
-This example is a basic starting point for using [Tailwind CSS](https://tailwindcss.com) with Next.js. It includes the following [PostCSS](https://github.com/postcss/postcss) plugins:
 
-- [postcss-preset-env](https://preset-env.cssdb.org/) - Adds stage 2+ features and autoprefixes
+### 2. Find the right json file
 
-To control the generated stylesheet's filesize, this example uses Tailwind CSS' [`purge` option](https://tailwindcss.com/docs/controlling-file-size/#removing-unused-css) to remove unused CSS.
+Unzip the contents of the Takeout archive. At the root of the `Location History` folder you should have a file named `location history.json`. This file might be located or named differently depending on your region and locale.
+
+### 3. Drop the file in the interface.
+
+If you want to launch this app locally from the repo:
+- Clone this repository
+- `$ cd fog-of war && yarn && yarn start`
+
+Otherwise you can head to https://fog-of-war.vercel.app.
+
+Drag and drop the json file onto the map, then wait for it to display your scratch map. The data is processed locally and never leaves your device.
+
