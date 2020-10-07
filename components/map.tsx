@@ -13,7 +13,7 @@ export default function Map() {
 
     const map = new mapboxgl.Map({
       container: "map",
-      style: "mapbox://styles/mapbox/outdoors-v11",
+      style: "mapbox://styles/benjamintd/ckfzcwnmc140m19mldf36aq6x",
       center: [2, 48],
       zoom: 2,
       logoPosition: "bottom-right",
@@ -50,7 +50,7 @@ export default function Map() {
   }, [featureCollection, map]);
 
   return (
-    <div className="w-full h-full" id="map">
+    <div className="w-full h-full appearance-none" id="map">
       <Head>
         <link
           href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css"
@@ -81,9 +81,9 @@ function setStyle(map: mapboxgl.Map) {
           [2],
           "hsla(233, 0%, 100%, 0.94)",
           [1],
-          "hsla(0, 0%, 100%, 0.51)",
+          "hsla(0, 0%, 100%, 0.66)",
           0,
-          "hsla(0, 0%, 100%, 0.17)",
+          "hsla(0, 0%, 100%, 0.33)",
           "hsla(0, 0%, 100%, 0.66)",
         ],
         "fill-outline-color": "hsla(0, 0%, 0%, 0)",
@@ -131,9 +131,9 @@ function setStyle(map: mapboxgl.Map) {
           0,
           "hsl(231, 14%, 84%)",
           8.81,
-          "hsla(231, 14%, 84%, 0.18)",
+          "hsla(231, 14%, 84%, 0.7)",
           12,
-          "hsla(231, 14%, 84%, 0)",
+          "hsla(231, 14%, 84%, 0.5)",
         ],
       },
     },
@@ -153,6 +153,10 @@ function setStyle(map: mapboxgl.Map) {
           ["linear"],
           ["zoom"],
           0,
+          "hsla(25, 65%, 64%, 0.0)",
+          3,
+          "hsla(25, 65%, 64%, 0.0)",
+          5,
           "hsla(25, 65%, 64%, 0.69)",
           12.7,
           "hsla(25, 14%, 69%, 0.59)",

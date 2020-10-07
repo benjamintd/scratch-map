@@ -6,7 +6,7 @@ export type IState = {
   featureCollection: GeoJSON.FeatureCollection;
   map: mapboxgl.Map | null;
   data: any;
-  dragStatus: "idle" | "loading" | "dragging";
+  dragStatus: "idle" | "loading" | "dragging" | "error";
   set: (fn: (state: IState) => void) => void;
 };
 

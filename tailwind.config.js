@@ -9,6 +9,9 @@ module.exports = {
       colors: {
         'accent-1': '#333',
       },
+      fontFamily: {
+        lora: ['Lora', 'serif']
+      }
     },
   },
   variants: {},

@@ -8,20 +8,28 @@ import { useDropzone } from "react-dropzone";
 
 import { useStore } from "../lib/store";
 
-export default function Dropzone({ children }: { children: React.ReactNode }) {
+export default function Dropzone({
+  children,
+  noClick,
+}: {
+  children: React.ReactNode;
+  noClick: boolean;
+}) {
   const { set, dragStatus } = useStore();
   const onDrop = useCallback(async (acceptedFiles: Blob[]) => {
-    set((state) => {
-      state.dragStatus = "loading";
-    });
-    const fc = await readFile(acceptedFiles[0]);
-
-    set((state) => {
-      state.featureCollection = fc;
-      state.dragStatus = "idle";
-    });
-
-    localforage.setItem("featureCollection", fc);
+    try {
+      set((state) => {
+        state.dragStatus = "loading";
+      });
+      const fc = await readFile(acceptedFiles[0]);
+      localforage.setItem("featureCollection", fc);
+      set((state) => {
+        state.featureCollection = fc;
+        state.dragStatus = "idle";
+      });
+    } catch (error) {
+      set((state) => (state.dragStatus = "error"));
+    }
   }, []);
 
   const onDragEnter = useCallback(() => {
@@ -40,8 +48,8 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
     onDrop,
     onDragEnter,
     onDragLeave,
-    // accept: "application/json",
-    noClick: true,
+    accept: "application/json",
+    noClick,
     noKeyboard: true,
   });
 
@@ -55,7 +63,7 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
       {children}
       <div
         className={classnames(
-          "absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center text-3xl font-bold text-white text-shadow",
+          "absolute top-0 left-0 w-full h-full pointer-events-none flex items-center justify-center text-center p-6 text-lg font-bold text-white text-shadow",
           {
             "bg-gray-900 bg-opacity-75": dragStatus !== "idle",
             "hidden opacity-0": dragStatus === "idle",
@@ -64,7 +72,11 @@ export default function Dropzone({ children }: { children: React.ReactNode }) {
       >
         {dragStatus === "dragging"
           ? "Drag a file to show it on the map."
-          : "Loading... This might take a while. Staying on this tab makes processing faster."}
+          : dragStatus === "loading"
+          ? "Loading... This might take a while. Staying on this tab makes processing faster."
+          : dragStatus === "error"
+          ? "There was an error processing your file. Have you selected the right one?"
+          : ""}
       </div>
     </div>
   );
