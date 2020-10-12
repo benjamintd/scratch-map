@@ -2,10 +2,10 @@ import Head from "next/head";
 import React from "react";
 
 export default function Meta() {
-  const title = "Pelica - Fog Of War";
+  const title = "Pelica - Scratch Map";
   const description = "How much of the world have you scratched?";
   const ogImageUrl = "https://benmaps.fr/og-image.png";
-  const url = "https://benmaps.fr ";
+  const url = "https://scratch-map.vercel.app";
 
   return (
     <Head>
@@ -22,11 +22,11 @@ export default function Meta() {
       <meta content="summary_large_image" name="twitter:card"></meta>
       <meta content="#f7fafc" name="theme-color"></meta>
       <link
-        href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Raleway:wght@400;700&display=swap"
         rel="stylesheet"
       />
-      <link href="favicon.ico" rel="icon" />
-      <link href="/icon-512.png" rel="apple-touch-icon"></link>
+      <link href="favicon.png" rel="icon" />
+      <link href="/apple-touch-icon.png" rel="apple-touch-icon"></link>
     </Head>
   );
 }

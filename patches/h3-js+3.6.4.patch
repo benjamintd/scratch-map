@@ -1,0 +1,18 @@
+Because we use h3-js in a webworker, we need to delete this condition to avoid a crash
+due to the emscripten compilation, which bugs when the `window` exists but not `document`.
+
+diff --git a/node_modules/h3-js/dist/browser/h3-js.js b/node_modules/h3-js/dist/browser/h3-js.js
+index fa31223..f722cb4 100644
+--- a/node_modules/h3-js/dist/browser/h3-js.js
++++ b/node_modules/h3-js/dist/browser/h3-js.js
+@@ -24,10 +24,6 @@ var libh3 = function (libh3) {
+   var readAsync;
+
+   {
+-    if (document.currentScript) {
+-      scriptDirectory = document.currentScript.src;
+-    }
+-
+     if (scriptDirectory.indexOf("blob:") !== 0) {
+       scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf("/") + 1);
+     } else {

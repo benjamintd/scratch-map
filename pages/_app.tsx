@@ -1,4 +1,5 @@
 import "../styles/index.css";
+import "nprogress/nprogress.css";
 
 import type { AppProps } from "next/app";
 import React from "react";

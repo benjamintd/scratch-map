@@ -1,9 +1,7 @@
-import { bboxPolygon, difference, featureCollection } from "@turf/turf";
 import classnames from "classnames";
-import { geoToH3, h3SetToMultiPolygon, h3ToParent, kRing } from "h3-js";
 import localforage from "localforage";
-import { flatMap } from "lodash";
-import React, { useCallback } from "react";
+import NProgress from "nprogress";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { useStore } from "../lib/store";
@@ -15,20 +13,68 @@ export default function Dropzone({
   children: React.ReactNode;
   noClick: boolean;
 }) {
+  const workerRef = useRef<Worker>();
+  useEffect(() => {
+    workerRef.current = new Worker("../lib/tiler.worker.ts", {
+      type: "module",
+    });
+    workerRef.current.onmessage = (evt) => {
+      const data = JSON.parse(evt.data);
+
+      switch (data.status) {
+        case "done":
+          const featureCollection = data.featureCollection;
+          localforage.setItem("featureCollection", featureCollection);
+          set((state) => {
+            state.featureCollection = featureCollection;
+            state.dragStatus = "idle";
+          });
+          NProgress.done();
+          break;
+
+        case "loaded":
+          console.log("loaded");
+          NProgress.set(0.1);
+          break;
+        case "copied":
+          console.log("copied");
+          NProgress.set(0.2);
+          break;
+        case "incremented":
+          console.log("incremented");
+          NProgress.set(0.5);
+          break;
+        case "masked":
+          console.log("masked");
+          NProgress.set(0.9);
+          break;
+        case "error":
+          set((state) => {
+            state.dragStatus = "error";
+          });
+          NProgress.done();
+          break;
+        default:
+          break;
+      }
+    };
+    return () => {
+      workerRef.current.terminate();
+    };
+  }, []);
+
   const { set, dragStatus } = useStore();
   const onDrop = useCallback(async (acceptedFiles: Blob[]) => {
+    NProgress.start();
     try {
       set((state) => {
         state.dragStatus = "loading";
       });
-      const fc = await readFile(acceptedFiles[0]);
-      localforage.setItem("featureCollection", fc);
-      set((state) => {
-        state.featureCollection = fc;
-        state.dragStatus = "idle";
-      });
+      const buffer = await readFile(acceptedFiles[0]);
+      workerRef.current.postMessage(buffer);
     } catch (error) {
       set((state) => (state.dragStatus = "error"));
+      NProgress.done();
     }
   }, []);
 
@@ -73,7 +119,7 @@ export default function Dropzone({
         {dragStatus === "dragging"
           ? "Drag a file to show it on the map."
           : dragStatus === "loading"
-          ? "Loading... This might take a while. Staying on this tab makes processing faster."
+          ? "Loading... This might take a couple minutes."
           : dragStatus === "error"
           ? "There was an error processing your file. Have you selected the right one?"
           : ""}
@@ -82,7 +128,7 @@ export default function Dropzone({
   );
 }
 
-function readFile(file): Promise<GeoJSON.FeatureCollection> {
+function readFile(file): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onabort = () => reject("file reading was aborted");
@@ -90,95 +136,12 @@ function readFile(file): Promise<GeoJSON.FeatureCollection> {
     reader.onload = () => {
       try {
         const str = Buffer.from(reader.result as ArrayBuffer);
-        let marker = 0;
-        const precision = 10;
-        const tiles = new Map();
-        let tile, i, j, k, l;
-        while (true) {
-          i = str.indexOf('"latitudeE7" : ', marker, "utf-8");
-          j = str.indexOf(",\n", i, "utf-8");
-          k = str.indexOf('"longitudeE7" : ', j, "utf-8");
-          l = str.indexOf(",\n", k, "utf-8");
 
-          if (l > -1) {
-            marker = l + 1;
-          } else {
-            break;
-          }
-
-          tile = geoToH3(
-            +str.slice(i + 15, j).toString("utf-8") * 1e-7, // latitude
-            +str.slice(k + 16, l).toString("utf-8") * 1e-7, // longitude
-            precision
-          );
-
-          incrementTile(tile, tiles);
-        }
-        const fc = featureCollection([
-          getMaskPolygon(tiles, 0),
-          getMaskPolygon(tiles, 1),
-          getMaskPolygon(tiles, 2),
-          getMaskPolygon(tiles, 0, 3, 2),
-        ]) as GeoJSON.FeatureCollection;
-        resolve(fc);
+        resolve(str);
       } catch (error) {
         reject(error);
       }
     };
     reader.readAsArrayBuffer(file);
   });
-}
-
-function incrementTile(tile, tiles) {
-  if (tiles.has(tile)) {
-    tiles.set(tile, tiles.get(tile) + 1);
-  } else {
-    tiles.set(tile, 1);
-  }
-}
-
-function getPolygon(
-  tiles: Map<string, number>,
-  kring: number,
-  precision?: number,
-  minProbes?: number
-): GeoJSON.Feature<GeoJSON.MultiPolygon> {
-  let tilesArray = Array.from(tiles.keys());
-  tilesArray = Array.from(
-    new Set(
-      flatMap(tilesArray, (t) => {
-        if (minProbes && tiles.get(t) < minProbes) {
-          return [];
-        }
-        const tile = precision > 0 ? h3ToParent(t, precision) : t;
-        return kring ? kRing(tile, kring) : [tile];
-      })
-    )
-  );
-
-  return {
-    type: "Feature",
-    properties: {
-      kring,
-    },
-    geometry: {
-      type: "MultiPolygon",
-      coordinates: h3SetToMultiPolygon(tilesArray, true),
-    },
-  };
-}
-
-function getMaskPolygon(
-  tiles: Map<string, number>,
-  kring: number,
-  precision?: number,
-  minProbes?: number
-): GeoJSON.Feature<GeoJSON.MultiPolygon> {
-  const feature = difference(
-    bboxPolygon([-179.99, -89.99, 179.99, 89.99]),
-    getPolygon(tiles, kring, precision, minProbes)
-  ) as GeoJSON.Feature<GeoJSON.MultiPolygon>;
-  feature.properties.kring = kring;
-  feature.properties.precision = precision;
-  return feature;
 }

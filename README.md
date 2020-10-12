@@ -1,4 +1,4 @@
-# Fog of war
+# Scratch map
 
 How much of the world have you seen ?
 
@@ -26,10 +26,10 @@ Unzip the contents of the Takeout archive. At the root of the `Location History`
 ### 3. Drop the file in the interface.
 
 If you want to launch this app locally from the repo:
-- Clone this repository
-- `$ cd fog-of war && yarn && yarn start`
+- `$ git clone git@github.com:benjamintd/scratch-map.git`
+- `$ cd scratch-map && yarn && yarn start`
 
-Otherwise you can head to https://fog-of-war.vercel.app.
+Otherwise you can head to https://scratch-map.vercel.app.
 
 Drag and drop the json file onto the map, then wait for it to display your scratch map. The data is processed locally and never leaves your device.
 

@@ -3,8 +3,8 @@ import React from "react";
 
 import ClearButton from "../components/clearButton";
 import Dropzone from "../components/dropzone";
+import Landing from "../components/landing";
 import Meta from "../components/meta";
-import Panel from "../components/panel";
 
 const Map = dynamic(() => import("../components/map"));
 
@@ -19,7 +19,7 @@ export default function IndexPage() {
           </Dropzone>
           <ClearButton />
         </div>
-        <Panel />
+        <Landing />
       </div>
     </div>
   );
