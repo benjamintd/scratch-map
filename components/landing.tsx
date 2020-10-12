@@ -9,7 +9,7 @@ export default function Landing() {
 
   return (
     <div className="absolute h-full w-full overflow-y-scroll bg-gradient-to-b from-orange-100 to-orange-200 z-50 text-lg">
-      <div className="w-full bg-white h-16 shadow-md flex items-center justify-between  p-4">
+      <div className="w-full bg-white h-16 shadow-md flex items-center justify-between p-4">
         <span>
           <span className="font-raleway mr-1">a tool from </span>
           <span className="font-bold font-raleway text-3xl">Pelica</span>
@@ -21,7 +21,7 @@ export default function Landing() {
           <img className="h-10 w-10" src="/GitHub-Mark-64px.png" />
         </a>
       </div>
-      <div className="max-w-3xl mx-auto py-12">
+      <div className="max-w-3xl py-12 mx-auto px-4">
         <h1 className="text-center text-5xl text-orange-800 font-lora mb-6">
           How much of the world have you <strong>scratched</strong>?
         </h1>
