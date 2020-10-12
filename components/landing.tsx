@@ -22,7 +22,7 @@ const Paragraph = (props: React.HTMLProps<HTMLParagraphElement>) => (
 );
 
 const Step = (props: React.HTMLProps<HTMLParagraphElement>) => (
-  <p className={classnames("mb-6 text-orange-800", props.className)}>
+  <p className={classnames("mb-6 font-bold", props.className)}>
     {props.children}
   </p>
 );
@@ -86,18 +86,18 @@ export default function Landing() {
         <Paragraph>
           Once the archive is ready, download it and unzip the folder. Find the
           file that is called{" "}
-          <code className="text-sm bg-gray-100 border rounded p-1 shadow-md">
+          <code className="text-sm bg-gray-100 border rounded p-1 shadow-sm">
             Location History.json
           </code>
           . This file may be named differently depending on your location and
           locale, but it's the one located at the root of the namesake folder.
         </Paragraph>
 
-        <details className="bg-gray-100 mb-6">
-          <summary className="mb-3">
+        <details className="bg-white border shadow-md rounded mb-6">
+          <summary className="py-2 px-4">
             Need some guidance? Follow this step by step tutorial
           </summary>
-          <div className="px-4 py-1">
+          <div className="px-4 pt-4">
             <Paragraph>
               Google Takeout lists your Google data sources and enables you to
               export that data. Go to{" "}
@@ -106,7 +106,7 @@ export default function Landing() {
               </ExternalLink>{" "}
               and log in to your Google account.
             </Paragraph>
-            <Step>A. First, uneselect all possible exports</Step>
+            <Step>A. First, unselect all possible exports</Step>
             <Paragraph>
               Click on the "Deselect All" button. You will only need your
               location data.
@@ -142,7 +142,7 @@ export default function Landing() {
             <Step>F. Unzip the folder and find the Location History file</Step>
             <Paragraph>
               Once downloaded, unzip the folder. Find the file that is called{" "}
-              <code className="text-sm bg-gray-100 border rounded p-1 shadow-md">
+              <code className="text-sm bg-gray-100 border rounded p-1 shadow-sm">
                 Location History.json
               </code>
               . This file may be named differently depending on your location
