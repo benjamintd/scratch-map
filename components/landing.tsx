@@ -1,7 +1,25 @@
-import React from "react";
+import classnames from "classnames";
+import React, { ReactNode } from "react";
 
 import { useStore } from "../lib/store";
 import Dropzone from "./dropzone";
+
+interface TxtProps {
+  children: ReactNode;
+  className?: string;
+}
+
+const H2 = (props: TxtProps) => (
+  <h2
+    className={classnames("font-bold text-2xl font-lora pb-6", props.className)}
+  >
+    {props.children}
+  </h2>
+);
+
+const Paragraph = (props: TxtProps) => (
+  <p className={classnames("mb-6", props.className)}>{props.children}</p>
+);
 
 export default function Landing() {
   const { featureCollection, dragStatus } = useStore();
@@ -28,9 +46,9 @@ export default function Landing() {
         <h2 className="font-lora font-bold text-xl text-center">
           Create your own map, using your Google Location history.
         </h2>
-        <p className="text-center mb-6">
+        <Paragraph className="text-center">
           (your data never leaves your computer)
-        </p>
+        </Paragraph>
         <div className="relative my-16">
           <div className="absolute w-full h-full rounded-lg bg-orange-400 transform rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
           <img
@@ -39,10 +57,9 @@ export default function Landing() {
           />
         </div>
 
-        <h2 className="font-bold text-2xl font-lora pb-6">
-          1. Download your Google Location History
-        </h2>
-        <p className="mb-6">
+        <H2>1. Download your Google Location History</H2>
+
+        <Paragraph>
           Head to{" "}
           <a
             className="text-blue-800 hover:text-blue-700 underline"
@@ -54,7 +71,7 @@ export default function Landing() {
           </a>
           , then make a download request for your location history. Unselecting
           everything except the location history will make the download faster.
-        </p>
+        </Paragraph>
 
         <div className="relative my-16">
           <div className="absolute w-full h-full rounded-lg bg-orange-600 transform rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
@@ -63,7 +80,7 @@ export default function Landing() {
             src="/google-takeout.png"
           />
         </div>
-        <p className="mb-6">
+        <Paragraph>
           Files of other formats are not supported right now.{" "}
           <a
             className="text-blue-800 hover:text-blue-700 underline"
@@ -72,12 +89,11 @@ export default function Landing() {
             Let us know
           </a>{" "}
           if you have other data that you'd like us to handle.
-        </p>
+        </Paragraph>
 
-        <h2 className="font-bold text-2xl font-lora pb-6">
-          2. Find your location data file
-        </h2>
-        <p className="mb-6">
+        <H2>2. Find your location data file</H2>
+
+        <Paragraph>
           Once the archive is ready, download it and unzip the folder. Find the
           file that is called{" "}
           <code className="bg-gray-100 border rounded p-1 shadow-md">
@@ -85,14 +101,13 @@ export default function Landing() {
           </code>
           . This file may be named differently depending on your location and
           locale, but it's the one located at the root of the folder.
-        </p>
-        <h2 className="font-bold text-xl font-lora pb-6">
-          3. Drag and drop it here
-        </h2>
-        <p className="mb-6">
+        </Paragraph>
+
+        <H2>3. Drag and drop it here</H2>
+        <Paragraph>
           Drag and drop the file here. The data is processed locally and never
           leaves your computer.
-        </p>
+        </Paragraph>
         <Dropzone noClick={false}>
           <button className="w-full h-40 bg-white border flex items-center justify-center cursor-pointer mb-6 shadow-md">
             {dragStatus === "idle" && (
@@ -101,10 +116,10 @@ export default function Landing() {
           </button>
         </Dropzone>
 
-        <h2 className="font-bold text-xl font-lora pb-6">4. Browse the map!</h2>
-        <p className="mb-6">
+        <H2>4. Browse the map!</H2>
+        <Paragraph>
           You can try zooming around the cities you have visited 🤩.
-        </p>
+        </Paragraph>
         <div className="relative my-16">
           <div className="absolute w-full h-full rounded-lg bg-orange-300 transform -rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
           <img
@@ -113,7 +128,7 @@ export default function Landing() {
           />
         </div>
 
-        <p className="mt-12 text-3xl font-lora text-center">
+        <Paragraph className="mt-12 text-3xl font-lora text-center">
           Did you like this tool?{" "}
           <a
             className="underline hover:text-gray-800"
@@ -121,7 +136,7 @@ export default function Landing() {
           >
             Tweet us your screenshots!
           </a>
-        </p>
+        </Paragraph>
       </div>
     </div>
   );
