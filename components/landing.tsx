@@ -94,7 +94,7 @@ export default function Landing() {
           leaves your computer.
         </p>
         <Dropzone noClick={false}>
-          <button className="w-full h-40 bg-white border flex items-center justify-center cursor-pointer mb-6">
+          <button className="w-full h-40 bg-white border flex items-center justify-center cursor-pointer mb-6 shadow-md">
             {dragStatus === "idle" && (
               <span className="text-lg font-bold">drop your file here!</span>
             )}
