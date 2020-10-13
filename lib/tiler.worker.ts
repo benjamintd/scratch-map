@@ -16,7 +16,7 @@ function bufferToTilesCollection(
   const tiles = new Map();
   let tile, i, j, k, l;
 
-  logStatus("loaded");
+  logStatus("loading");
 
   // build a buffer from the uint8array to be able to search through it
   const buffer = Buffer.alloc(str.buffer.byteLength);
@@ -24,7 +24,7 @@ function bufferToTilesCollection(
     buffer[i] = str[i];
   }
 
-  logStatus("copied");
+  logStatus("incrementing");
 
   while (true) {
     i = buffer.indexOf('"latitudeE7" : ', marker, "utf-8");
@@ -47,7 +47,7 @@ function bufferToTilesCollection(
     incrementTile(tile, tiles);
   }
 
-  logStatus("incremented");
+  logStatus("masking");
 
   const fc = featureCollection([
     getMaskPolygon(tiles, 0),
@@ -56,7 +56,7 @@ function bufferToTilesCollection(
     getMaskPolygon(tiles, 0, 3),
   ]) as GeoJSON.FeatureCollection;
 
-  logStatus("masked");
+  logStatus("finishing");
 
   return fc;
 }

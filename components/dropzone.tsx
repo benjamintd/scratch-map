@@ -4,7 +4,9 @@ import NProgress from "nprogress";
 import React, { useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { useStore } from "../lib/store";
+import { IState, useStore } from "../lib/store";
+
+NProgress.configure({ showSpinner: false });
 
 export default function Dropzone({
   children,
@@ -14,6 +16,9 @@ export default function Dropzone({
   noClick: boolean;
 }) {
   const workerRef = useRef<Worker>();
+
+  const { set, dragStatus } = useStore();
+
   useEffect(() => {
     workerRef.current = new Worker("../lib/tiler.worker.ts", {
       type: "module",
@@ -21,49 +26,49 @@ export default function Dropzone({
     workerRef.current.onmessage = (evt) => {
       const data = JSON.parse(evt.data);
 
-      switch (data.status) {
+      switch (data.status as IState["dragStatus"]) {
         case "done":
           const featureCollection = data.featureCollection;
           localforage.setItem("featureCollection", featureCollection);
           set((state) => {
             state.featureCollection = featureCollection;
-            state.dragStatus = "idle";
           });
           NProgress.done();
           break;
 
-        case "loaded":
+        case "loading":
           console.log("loaded");
           NProgress.set(0.1);
           break;
-        case "copied":
+        case "incrementing":
           console.log("copied");
           NProgress.set(0.2);
           break;
-        case "incremented":
+        case "masking":
           console.log("incremented");
           NProgress.set(0.5);
           break;
-        case "masked":
+        case "finishing":
           console.log("masked");
           NProgress.set(0.9);
           break;
         case "error":
-          set((state) => {
-            state.dragStatus = "error";
-          });
           NProgress.done();
           break;
         default:
           break;
       }
+
+      // set the current drag status depending on the worker response
+      set((state) => {
+        state.dragStatus = data.status;
+      });
     };
     return () => {
       workerRef.current.terminate();
     };
   }, []);
 
-  const { set, dragStatus } = useStore();
   const onDrop = useCallback(async (acceptedFiles: Blob[]) => {
     NProgress.start();
     try {
@@ -122,6 +127,14 @@ export default function Dropzone({
           ? "Loading... This might take a couple minutes."
           : dragStatus === "error"
           ? "There was an error processing your file. Have you selected the right one?"
+          : dragStatus === "masking"
+          ? "Creating geometries..."
+          : dragStatus === "incrementing"
+          ? "Tiling location points..."
+          : dragStatus === "finishing"
+          ? "Finishing up..."
+          : dragStatus === "done"
+          ? "Creating map..."
           : ""}
       </div>
     </div>
