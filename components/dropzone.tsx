@@ -25,9 +25,8 @@ export default function Dropzone({
     });
     workerRef.current.onmessage = (evt) => {
       const data = JSON.parse(evt.data);
-
       switch (data.status as IState["dragStatus"]) {
-        case "done":
+        case "idle":
           const featureCollection = data.featureCollection;
           localforage.setItem("featureCollection", featureCollection);
           set((state) => {
@@ -37,25 +36,22 @@ export default function Dropzone({
           break;
 
         case "loading":
-          console.log("loaded");
           NProgress.set(0.1);
           break;
         case "incrementing":
-          console.log("copied");
           NProgress.set(0.2);
           break;
         case "masking":
-          console.log("incremented");
           NProgress.set(0.5);
           break;
         case "finishing":
-          console.log("masked");
           NProgress.set(0.9);
           break;
         case "error":
           NProgress.done();
           break;
         default:
+          NProgress.done();
           break;
       }
 
