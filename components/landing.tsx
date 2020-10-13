@@ -151,7 +151,7 @@ export default function Landing() {
               <TutorialImage src="/unzip.png" />
               <Paragraph>
                 Files of other formats are not supported right now.{" "}
-                <ExternalLink href="mailto:contact@pelica.co">
+                <ExternalLink href="mailto:hey@pelica.co">
                   Let us know
                 </ExternalLink>{" "}
                 if you have other data that you'd like us to handle.
