@@ -166,7 +166,7 @@ export default function Landing() {
             leaves your computer.
           </Paragraph>
           <Dropzone noClick={false}>
-            <button className="w-full p-2 bg-white border cursor-pointer mb-6 shadow-md">
+            <button className="w-full h-64 p-2 bg-white border cursor-pointer shadow-md">
               {dragStatus === "idle" && (
                 <div className="w-full h-full flex flex-col items-center justify-center rounded-lg border-dashed border-4 p-4">
                   <img
@@ -179,6 +179,8 @@ export default function Landing() {
               )}
             </button>
           </Dropzone>
+          {/* spacer */}
+          <div className="h-6" />
         </section>
 
         <section id="browse-map">

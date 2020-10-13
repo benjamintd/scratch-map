@@ -123,7 +123,7 @@ self.addEventListener("message", (event) => {
 
     self.postMessage(
       JSON.stringify({
-        status: "done",
+        status: "idle",
         featureCollection,
       })
     );
