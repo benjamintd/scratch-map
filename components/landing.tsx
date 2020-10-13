@@ -217,7 +217,7 @@ export default function Landing() {
         </span>
         <a
           className="cursor-pointer"
-          href="https://github.com/benjamintd/scratch-map"
+          href="https://github.com/pelica-labs/scratch-map"
         >
           <img className="h-10 w-10" src="/GitHub-Mark-64px.png" />
         </a>
