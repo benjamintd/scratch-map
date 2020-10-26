@@ -10,7 +10,6 @@ module.exports = {
         'accent-1': '#333',
       },
       fontFamily: {
-        lora: ['Lora', 'serif'],
         raleway: ["Raleway", 'sans serif']
       },
       rotate: {

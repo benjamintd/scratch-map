@@ -22,7 +22,7 @@ export default function Meta() {
       <meta content="summary_large_image" name="twitter:card"></meta>
       <meta content="#f7fafc" name="theme-color"></meta>
       <link
-        href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Raleway:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
         rel="stylesheet"
       />
       <link href="favicon.png" rel="icon" />

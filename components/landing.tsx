@@ -53,7 +53,7 @@ export default function Landing() {
   return (
     <div className="absolute h-full w-full overflow-y-scroll bg-gray-100 z-50 text-lg">
       <div className="max-w-3xl py-12 mx-auto px-4">
-        <h1 className="text-center text-5xl text-orange-600 font-lora mb-6">
+        <h1 className="text-center text-5xl text-orange-600 font-raleway mb-6">
           How much of the world have you <strong>scratched</strong>?
         </h1>
         <h2 className="font-raleway font-bold text-xl text-center">
@@ -197,7 +197,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <Paragraph className="mt-12 text-3xl font-lora text-center">
+        <Paragraph className="mt-12 text-3xl font-raleway text-center">
           Do you like this tool?
           <br />
           <ExternalLink href="https://twitter.com/intent/tweet?text=%23scratchmap">
