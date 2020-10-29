@@ -27,13 +27,14 @@ const Step = (props: React.HTMLProps<HTMLParagraphElement>) => (
 );
 
 const TutorialImage = (props: React.HTMLProps<HTMLImageElement>) => (
-  <img
+  <div
     className={classnames(
-      "relative mb-6 w-full mx-auto border rounded-lg z-10 shadow-lg",
+      "relative mb-6 w-full mx-auto border rounded-lg z-10 shadow-lg overflow-hidden",
       props.className
     )}
-    src={props.src}
-  />
+  >
+    <Image height={1504} src={props.src} width={2774} />
+  </div>
 );
 
 const ExternalLink = (props: React.HTMLProps<HTMLAnchorElement>) => (
@@ -224,12 +225,9 @@ export default function Landing() {
           className="cursor-pointer"
           href="https://github.com/pelica-labs/scratch-map"
         >
-          <Image
-            className="h-10 w-10"
-            height={64}
-            src="/GitHub-Mark-64px.png"
-            width={64}
-          />
+          <div className="h-10 w-10">
+            <Image height={64} src="/GitHub-Mark-64px.png" width={64} />
+          </div>
         </a>
       </div>
     </div>
