@@ -1,4 +1,5 @@
 import classnames from "classnames";
+import Image from "next/image";
 import React from "react";
 
 import { useStore } from "../lib/store";
@@ -64,9 +65,11 @@ export default function Landing() {
         </Paragraph>
         <div className="relative my-16">
           <div className="absolute w-full h-full rounded-lg bg-orange-400 transform rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
-          <img
+          <Image
             className="relative w-full mb-6 mx-auto border rounded-lg z-10 shadow-lg"
+            height={1328}
             src="/example.png"
+            width={1813}
           />
         </div>
 
@@ -190,9 +193,11 @@ export default function Landing() {
           </Paragraph>
           <div className="relative my-16">
             <div className="absolute w-full h-full rounded-lg bg-orange-300 transform -rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
-            <img
+            <Image
               className="relative w-full mb-6 mx-auto border rounded-lg z-10 shadow-lg"
+              height={1182}
               src="/paris-closeup.png"
+              width={1518}
             />
           </div>
         </section>
@@ -219,7 +224,12 @@ export default function Landing() {
           className="cursor-pointer"
           href="https://github.com/pelica-labs/scratch-map"
         >
-          <img className="h-10 w-10" src="/GitHub-Mark-64px.png" />
+          <Image
+            className="h-10 w-10"
+            height={64}
+            src="/GitHub-Mark-64px.png"
+            width={64}
+          />
         </a>
       </div>
     </div>
