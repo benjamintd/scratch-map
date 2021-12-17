@@ -1,4 +1,9 @@
-import { bboxPolygon, difference, featureCollection } from "@turf/turf";
+import {
+  bboxPolygon,
+  coordEach,
+  difference,
+  featureCollection,
+} from "@turf/turf";
 import {
   geoToH3,
   h3SetToMultiPolygon,
@@ -50,10 +55,11 @@ function bufferToTilesCollection(
   logStatus("masking");
 
   const fc = featureCollection([
-    getMaskPolygon(tiles, 0),
     getMaskPolygon(tiles, 1),
     getMaskPolygon(tiles, 2),
-    getMaskPolygon(tiles, 0, 3),
+    getMaskPolygon(tiles, 0, 7, 2),
+    getMaskPolygon(tiles, 0, 5, 2),
+    getMaskPolygon(tiles, 0, 3, 2),
   ]) as GeoJSON.FeatureCollection;
 
   logStatus("finishing");
@@ -88,7 +94,7 @@ function getPolygon(
     )
   );
 
-  return {
+  const feature: GeoJSON.Feature<GeoJSON.MultiPolygon> = {
     type: "Feature",
     properties: {
       kring,
@@ -98,6 +104,13 @@ function getPolygon(
       coordinates: h3SetToMultiPolygon(tilesArray, true),
     },
   };
+
+  coordEach(feature, (p) => {
+    p[0] = Math.round(p[0] * 1e5) / 1e5;
+    p[1] = Math.round(p[1] * 1e5) / 1e5;
+  });
+
+  return feature;
 }
 
 function getMaskPolygon(
@@ -128,6 +141,6 @@ self.addEventListener("message", (event) => {
       })
     );
   } catch (error) {
-    self.postMessage(JSON.stringify({ status: "error" }));
+    self.postMessage(JSON.stringify({ status: "error", error }));
   }
 });

@@ -48,6 +48,7 @@ export default function Dropzone({
           NProgress.set(0.9);
           break;
         case "error":
+          console.error(data.error);
           NProgress.done();
           break;
         default:
