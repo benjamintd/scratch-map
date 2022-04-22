@@ -28,13 +28,12 @@ function bufferToTilesCollection(
   for (let i = 0; i < buffer.length; i++) {
     buffer[i] = str[i];
   }
-
   logStatus("incrementing");
 
   while (true) {
-    i = buffer.indexOf('"latitudeE7" : ', marker, "utf-8");
+    i = buffer.indexOf('"latitudeE7": ', marker, "utf-8");
     j = buffer.indexOf(",\n", i, "utf-8");
-    k = buffer.indexOf('"longitudeE7" : ', j, "utf-8");
+    k = buffer.indexOf('"longitudeE7": ', j, "utf-8");
     l = buffer.indexOf(",\n", k, "utf-8");
 
     if (l > -1) {
@@ -44,11 +43,10 @@ function bufferToTilesCollection(
     }
 
     tile = geoToH3(
-      +buffer.slice(i + 15, j).toString("utf-8") * 1e-7, // latitude
-      +buffer.slice(k + 16, l).toString("utf-8") * 1e-7, // longitude
+      +buffer.slice(i + 14, j).toString("utf-8") * 1e-7, // latitude
+      +buffer.slice(k + 15, l).toString("utf-8") * 1e-7, // longitude
       precision
     );
-
     incrementTile(tile, tiles);
   }
 
