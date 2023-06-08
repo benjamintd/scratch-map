@@ -29,7 +29,7 @@ If you want to launch this app locally from the repo:
 - `$ git clone git@github.com:benjamintd/scratch-map.git`
 - `$ cd scratch-map && yarn && yarn start`
 
-Otherwise you can head to https://scratch.pelica.co.
+Otherwise you can head to https://scratch.benmaps.fr.
 
 Drag and drop the json file onto the map, then wait for it to display your scratch map. The data is processed locally and never leaves your device.
 

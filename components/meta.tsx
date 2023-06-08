@@ -2,10 +2,10 @@ import Head from "next/head";
 import React from "react";
 
 export default function Meta() {
-  const title = "Pelica - Scratch Map";
+  const title = "Scratch Map";
   const description = "How much of the world have you scratched?";
-  const ogImageUrl = "https://scratch.pelica.co/og-image.png";
-  const url = "https://scratch.pelica.co";
+  const ogImageUrl = "https://scratch.benmaps.fr/og-image.png";
+  const url = "https://scratch.benmaps.fr";
 
   return (
     <Head>

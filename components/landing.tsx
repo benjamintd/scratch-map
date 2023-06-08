@@ -39,7 +39,7 @@ const TutorialImage = (props: React.HTMLProps<HTMLImageElement>) => (
 
 const ExternalLink = (props: React.HTMLProps<HTMLAnchorElement>) => (
   <a
-    className="text-blue-800 hover:text-blue-700 underline"
+    className="text-blue-800 underline hover:text-blue-700"
     href={props.href}
     rel="noopener noreferrer"
     target="_blank"
@@ -53,21 +53,21 @@ export default function Landing() {
   if (featureCollection?.features?.length) return null;
 
   return (
-    <div className="absolute h-full w-full overflow-y-scroll bg-gray-100 z-50 text-lg">
-      <div className="max-w-3xl py-12 mx-auto px-4">
-        <h1 className="text-center text-5xl text-orange-600 font-raleway mb-6">
+    <div className="absolute z-50 w-full h-full overflow-y-scroll text-lg bg-gray-100">
+      <div className="max-w-3xl px-4 py-12 mx-auto">
+        <h1 className="mb-6 text-5xl text-center text-orange-600 font-raleway">
           How much of the world have you <strong>scratched</strong>?
         </h1>
-        <h2 className="font-raleway font-bold text-xl text-center">
+        <h2 className="text-xl font-bold text-center font-raleway">
           Create your own map, using your Google Location history.
         </h2>
-        <Paragraph className="font-raleway text-center">
+        <Paragraph className="text-center font-raleway">
           (your data never leaves your computer)
         </Paragraph>
         <div className="relative my-16">
-          <div className="absolute w-full h-full rounded-lg bg-orange-400 transform rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
+          <div className="absolute z-0 w-full h-full transform -translate-x-1 translate-y-2 bg-orange-400 rounded-lg shadow-lg rotate-3" />
           <Image
-            className="relative w-full mb-6 mx-auto border rounded-lg z-10 shadow-lg"
+            className="relative z-10 w-full mx-auto mb-6 border rounded-lg shadow-lg"
             height={1328}
             src="/example.png"
             width={1813}
@@ -90,15 +90,15 @@ export default function Landing() {
           <Paragraph>
             Once the archive is ready, download it and unzip the folder. Find
             the file that is called{" "}
-            <code className="text-sm bg-gray-100 border rounded p-1 shadow-sm">
+            <code className="p-1 text-sm bg-gray-100 border rounded shadow-sm">
               Location History.json
             </code>
             . This file may be named differently depending on your location and
             locale, but it's the one located at the root of the namesake folder.
           </Paragraph>
 
-          <details className="bg-white border shadow-md rounded mb-6">
-            <summary className="py-2 px-4">
+          <details className="mb-6 bg-white border rounded shadow-md">
+            <summary className="px-4 py-2">
               Need some guidance? Follow this step by step tutorial
             </summary>
             <div className="px-4 pt-4">
@@ -146,7 +146,7 @@ export default function Landing() {
               <Step>Unzip the folder and find the Location History file</Step>
               <Paragraph>
                 Once downloaded, unzip the folder. Find the file that is called{" "}
-                <code className="text-sm bg-gray-100 border rounded p-1 shadow-sm">
+                <code className="p-1 text-sm bg-gray-100 border rounded shadow-sm">
                   Location History.json
                 </code>
                 . This file may be named differently depending on your location
@@ -155,7 +155,7 @@ export default function Landing() {
               <TutorialImage src="/unzip.png" />
               <Paragraph>
                 Files of other formats are not supported right now.{" "}
-                <ExternalLink href="mailto:hey@pelica.co">
+                <ExternalLink href="mailto:benjamin.tdm+scratch@gmail.com">
                   Let us know
                 </ExternalLink>{" "}
                 if you have other data that you'd like us to handle.
@@ -170,11 +170,11 @@ export default function Landing() {
             leaves your computer.
           </Paragraph>
           <Dropzone noClick={false}>
-            <button className="w-full h-64 p-2 bg-white border cursor-pointer shadow-md">
+            <button className="w-full h-64 p-2 bg-white border shadow-md cursor-pointer">
               {dragStatus === "idle" && (
-                <div className="w-full h-full flex flex-col items-center justify-center rounded-lg border-dashed border-4 p-4">
+                <div className="flex flex-col items-center justify-center w-full h-full p-4 border-4 border-dashed rounded-lg">
                   <img
-                    className="mb-6 w-32 transform transition duration-200 hover:scale-110"
+                    className="w-32 mb-6 transition duration-200 transform hover:scale-110"
                     draggable={false}
                     src="/add-file.svg"
                   />
@@ -193,9 +193,9 @@ export default function Landing() {
             You can try zooming around the cities you have visited 🤩.
           </Paragraph>
           <div className="relative my-16">
-            <div className="absolute w-full h-full rounded-lg bg-orange-300 transform -rotate-3 -translate-x-1 translate-y-2 z-0 shadow-lg" />
+            <div className="absolute z-0 w-full h-full transform -translate-x-1 translate-y-2 bg-orange-300 rounded-lg shadow-lg -rotate-3" />
             <Image
-              className="relative w-full mb-6 mx-auto border rounded-lg z-10 shadow-lg"
+              className="relative z-10 w-full mx-auto mb-6 border rounded-lg shadow-lg"
               height={1182}
               src="/paris-closeup.png"
               width={1518}
@@ -203,7 +203,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <Paragraph className="mt-12 text-3xl font-raleway text-center">
+        <Paragraph className="mt-12 text-3xl text-center font-raleway">
           Do you like this tool?
           <br />
           <ExternalLink href="https://twitter.com/intent/tweet?text=%23scratchmap">
@@ -211,21 +211,12 @@ export default function Landing() {
           </ExternalLink>
         </Paragraph>
       </div>
-      <div className="w-full bg-white border h-16 shadow-md flex items-center justify-between p-4">
-        <span>
-          <span className="font-raleway mr-1">a tool from </span>
-          <a
-            className="font-bold font-raleway text-3xl"
-            href="https://pelica.co"
-          >
-            Pelica
-          </a>
-        </span>
+      <div className="flex items-center justify-between w-full h-16 p-4 bg-white border shadow-md">
         <a
           className="cursor-pointer"
-          href="https://github.com/pelica-labs/scratch-map"
+          href="https://github.com/benjamintd/scratch-map"
         >
-          <div className="h-10 w-10">
+          <div className="w-10 h-10">
             <Image height={64} src="/GitHub-Mark-64px.png" width={64} />
           </div>
         </a>

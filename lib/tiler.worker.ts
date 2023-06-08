@@ -55,8 +55,8 @@ function bufferToTilesCollection(
   const fc = featureCollection([
     getMaskPolygon(tiles, 1),
     getMaskPolygon(tiles, 2),
-    getMaskPolygon(tiles, 0, 7, 2),
-    getMaskPolygon(tiles, 0, 5, 2),
+    getMaskPolygon(tiles, 0, 6, 2),
+    getMaskPolygon(tiles, 0, 4, 2),
     getMaskPolygon(tiles, 0, 3, 2),
   ]) as GeoJSON.FeatureCollection;
 

@@ -90,7 +90,7 @@ function setStyle(map: mapboxgl.Map) {
       type: "fill",
       source: "features",
       layout: {},
-      filter: ["==", ["get", "precision"], 5],
+      filter: ["==", ["get", "precision"], 4],
       paint: {
         "fill-opacity": 1,
         "fill-color": "hsla(233, 0%, 100%, 0.94)",
@@ -107,7 +107,7 @@ function setStyle(map: mapboxgl.Map) {
       type: "fill",
       source: "features",
       layout: {},
-      filter: ["==", ["get", "precision"], 7],
+      filter: ["==", ["get", "precision"], 6],
       paint: {
         "fill-opacity": 1,
         "fill-color": "hsla(233, 0%, 100%, 0.94)",
